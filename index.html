@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WEEK 2</title>
+    <script type="text/javascript" src="ExcelFormattedGISTEMPDataJS.js"></script>
+    <script type="text/javascript" src="gentelella/vendors/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="gentelella/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="gentelella/vendors/fastclick/lib/fastclick.js"></script>
+    <script type="text/javascript" src="gentelella/vendors/nprogress/nprogress.js"></script>
+    <script type="text/javascript" src="gentelella/vendors/Chart.js/dist/Chart.min.js"></script>
+    <script type="text/javascript" src="gentelella/build/js/custom.min.js"></script>
+    <script type="text/javascript" src="gentelella/vendors/ion.rangeSlider/js/ion.rangeSlider.min.js"></script>
+    <link rel="stylesheet" href="gentelella/vendors/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="gentelella/vendors/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="gentelella/vendors/normalize-css/normalize.css">
+    <link rel="stylesheet" href="gentelella/vendors/ion.rangeSlider/css/ion.rangeSlider.css">
+    <link rel="stylesheet" href="gentelella/vendors/ion.rangeSlider/css/ion.rangeSlider.skinFlat.css">
+  </head>
+  <body>
+    <div class="row">
+      <p> </p>
+    </div>
+    <div class="row">
+      <div class="col-md-3 col-sm-3"></div>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>World Temperature <small>choose year from bottom slider</small></h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <canvas id="mybarChart"></canvas>
+            <input type="text" class="range_years" value="" name="range" />
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-3"></div>
+    </div>
+
+    <script>
+      // NASA data
+      function processData(year) {
+        var index = year - 1880;
+        var json = nasa_data[index];
+        var array = [
+          json["Jan"]/100,
+          json["Feb"]/100,
+          json["Mar"]/100,
+          json["Apr"]/100,
+          json["May"]/100,
+          json["Jun"]/100,
+          json["Jul"]/100,
+          json["Aug"]/100,
+          json["Sep"]/100,
+          json["Oct"]/100,
+          json["Nov"]/100,
+          json["Dec"]/100];
+        return array;
+      };
+      // Ion Slider
+      $(document).ready(function() {
+          $(".range_years").ionRangeSlider({
+            min: 1880,
+            max: 2014,
+            from: 1880,
+            grid: true,
+            force_edges: true,
+            prettify_enabled: false,
+            onChange: function (data) {
+              updateData(mybarChart, data.from);
+              console.log(data.from);
+            }
+          });
+        });
+        // Bar chart
+        var ctx = document.getElementById("mybarChart");
+        function updateData(chart, year) {
+          var data = processData(year);
+          console.log(data);
+          chart.data.datasets.forEach((dataset) => {
+              dataset.data = data;
+          });
+          chart.update();
+        };
+        var mybarChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ["January", "February", "March", "April", "May", "June", "July", "August", "Septembre", "Octobre", "Novembre", "Decembbre"],
+            datasets: [{
+              label: 'average global temperature in celsius',
+              backgroundColor: "#26B99A",
+              data: processData(1880),
+            }]
+          },
+          options: {
+            scales: {
+              yAxes: [{
+                ticks: {
+                  suggestedMin: -1,
+                  suggestedMax: 1,
+                }
+              }]
+            }
+          }
+        });
+    </script>
+  </body>
+</html>
